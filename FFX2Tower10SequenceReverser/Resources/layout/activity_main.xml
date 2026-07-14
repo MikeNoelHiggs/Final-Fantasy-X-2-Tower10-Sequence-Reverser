@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1a1a2e"
+    android:keepScreenOn="true">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         LABELS — Turn + Inputs stacked above the slot row.
+         Grouped in a LinearLayout so both sit above slot_container
+         without conflicting RelativeLayout constraints.
+         ═══════════════════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/labels_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/slot_container"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="80dp"
+        android:layout_marginBottom="4dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_turn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Turn 1/30"
+            android:textColor="#FFD700"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_inputs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inputs: 0/2"
+            android:textColor="#AAAAAA"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         1×6 SLOT ROW — centred vertically, left-aligned content.
+         Slots are set Gone/Visible in code; gravity="start" keeps
+         the visible block pinned to the left edge of the screen.
+         80dp start padding + 80dp top margin (~one box width/height)
+         keeps the row clear of left-edge camera cut-outs in landscape.
+         ═══════════════════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/slot_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="80dp"
+        android:orientation="horizontal"
+        android:gravity="start|center_vertical"
+        android:paddingStart="80dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:id="@+id/slot_0"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="4dp"
+            android:background="#2a2a4e"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/slot_1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="4dp"
+            android:background="#2a2a4e"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/slot_2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="4dp"
+            android:background="#2a2a4e"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/slot_3"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="4dp"
+            android:background="#2a2a4e"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/slot_4"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="4dp"
+            android:background="#2a2a4e"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/slot_5"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="4dp"
+            android:background="#2a2a4e"
+            android:scaleType="fitCenter"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         NO-CONTROLLER OVERLAY — shown when no gamepad is detected
+         ═══════════════════════════════════════════════════════════ -->
+    <TextView
+        android:id="@+id/tv_no_controller"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Please connect a PS5 controller via Bluetooth"
+        android:textColor="#FF6B6B"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:visibility="gone" />
+
+    <!-- ═══════════════════════════════════════════════════════════
+         BOTTOM HINTS  —  [Options icon] Next Turn   [Share icon] Reset
+         ═══════════════════════════════════════════════════════════ -->
+    <LinearLayout
+        android:id="@+id/hints_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="12dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/options_button"
+            android:scaleType="fitCenter"
+            android:contentDescription="Options" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next Turn"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="28dp" />
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/share_button"
+            android:scaleType="fitCenter"
+            android:contentDescription="Share" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reset"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:layout_marginStart="6dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>
