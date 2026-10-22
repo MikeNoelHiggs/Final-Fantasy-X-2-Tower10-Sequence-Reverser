@@ -17,7 +17,7 @@ namespace FFX2Tower10SequenceReverser
     {
         private int _currentTurn = 1;
         private int _inputCount = 0;
-        private int _targetPlayerTwoId = -1;  // -1 = not yet assigned
+        private int _targetPlayerTwoId = -1;
 
         private bool _l2Down   = false;
         private bool _r2Down   = false;
@@ -125,7 +125,6 @@ namespace FFX2Tower10SequenceReverser
                           - _slotContainer.PaddingLeft
                           - _slotContainer.PaddingRight;
 
-            // Each slot has 4dp margin on every side (8dp total per slot)
             int marginPx = (int)(4 * Resources!.DisplayMetrics!.Density + 0.5f);
             _slotSize = (available - 6 * marginPx * 2) / 6;
 
@@ -164,7 +163,7 @@ namespace FFX2Tower10SequenceReverser
                 if (!isGamepad) continue;
 
                 _targetPlayerTwoId = id;
-                break;  // use the first controller found
+                break;
             }
 
             _tvNoController.Visibility =
@@ -184,11 +183,11 @@ namespace FFX2Tower10SequenceReverser
 
             switch (e.KeyCode)
             {
-                case Keycode.ButtonStart:   // Options — advance turn
+                case Keycode.ButtonStart:  
                     AdvanceTurn();
                     return true;
 
-                case Keycode.ButtonSelect:  // Share — full reset
+                case Keycode.ButtonSelect: 
                     ResetAll();
                     return true;
 
