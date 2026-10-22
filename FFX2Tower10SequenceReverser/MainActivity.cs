@@ -15,14 +15,10 @@ namespace FFX2Tower10SequenceReverser
 
     public class MainActivity : Activity
     {
-        // ── State ──────────────────────────────────────────────────────────────
         private int _currentTurn = 1;
         private int _inputCount = 0;
         private int _targetPlayerTwoId = -1;  // -1 = not yet assigned
 
-        // ── Axis-press state (debounce for MotionEvent inputs) ─────────────────
-        // Tracks the previous frame's value so we only fire on the
-        // transition from released → pressed, not on every motion event.
         private bool _l2Down   = false;
         private bool _r2Down   = false;
         private bool _hatUp    = false;
@@ -30,58 +26,36 @@ namespace FFX2Tower10SequenceReverser
         private bool _hatLeft  = false;
         private bool _hatRight = false;
 
-        // ── UI refs ────────────────────────────────────────────────────────────
         private ImageView[] _slots = null!;
         private LinearLayout _slotContainer = null!;
         private TextView _tvTurn = null!;
         private TextView _tvInputs = null!;
         private TextView _tvNoController = null!;
-        private int _slotSize = 0;   // computed once in OnWindowFocusChanged
+        private int _slotSize = 0;   
 
-        // ── Keycode → Drawable ID ──────────────────────────────────────────────
-        // Android delivers controller input via TWO separate systems:
-        //
-        //   DispatchKeyEvent  — digital buttons that fire a KeyEvent (on/off).
-        //                       All entries below are handled here.
-        //
-        //   OnGenericMotionEvent — analog axes that fire a MotionEvent (float value).
-        //                       L2 (Axis.Brake), R2 (Axis.Gas), and D-pad hat
-        //                       (Axis.HatX / HatY) come through this path on PS5
-        //                       DualSense via Bluetooth; they are NOT key events
-        //                       and cannot appear in this dictionary.
-        //
-        // L1 and R1 ARE digital buttons → they belong here.
-        // L2 and R2 are analog triggers → they are handled in OnGenericMotionEvent only.
+
         private static readonly Dictionary<Keycode, int> ButtonDrawables = new()
         {
-            // Face buttons
             { Keycode.ButtonA,   Resource.Drawable.cross_button    },
             { Keycode.ButtonB,   Resource.Drawable.circle_button   },
             { Keycode.ButtonX,   Resource.Drawable.square_button   },
             { Keycode.ButtonY,   Resource.Drawable.triangle_button },
-            // Shoulder bumpers (digital — key events)
             { Keycode.ButtonL1,  Resource.Drawable.l1_button       },
             { Keycode.ButtonR1,  Resource.Drawable.r1_button       },
-            // D-pad (key-event fallback; also caught via HatX/HatY axis on some devices)
             { Keycode.DpadUp,    Resource.Drawable.up_button       },
             { Keycode.DpadDown,  Resource.Drawable.down_button     },
             { Keycode.DpadLeft,  Resource.Drawable.left_button     },
             { Keycode.DpadRight, Resource.Drawable.right_button    },
         };
 
-        // ── Lifecycle ──────────────────────────────────────────────────────────
-        /// <summary>
-        /// Inflates the layout, wires up slot and HUD references,
-        /// detects connected controllers, and applies the initial turn state.
-        /// </summary>
+
         protected override void OnCreate(Bundle? savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.activity_main);
-            ActionBar?.Hide();   // remove the title bar — full-screen experience
-            HideSystemBars();    // enter immersive sticky mode — hides nav + status bar
+            ActionBar?.Hide();
+            HideSystemBars();  
 
-            // Wire up the 6-slot array in left-to-right order (index 0 = leftmost)
             _slots = new[]
             {
                 FindViewById<ImageView>(Resource.Id.slot_0)!,
@@ -97,8 +71,8 @@ namespace FFX2Tower10SequenceReverser
             _tvNoController  = FindViewById<TextView>(Resource.Id.tv_no_controller)!;
             _slotContainer   = FindViewById<LinearLayout>(Resource.Id.slot_container)!;
 
-            DetectControllers();  // populate _targetPlayerTwoId from connected devices
-            ApplyTurnState();     // set initial slot visibility + HUD
+            DetectControllers(); 
+            ApplyTurnState();     
         }
 
         /// <summary>
@@ -167,7 +141,6 @@ namespace FFX2Tower10SequenceReverser
             }
         }
 
-        // ── Controller detection ───────────────────────────────────────────────
         /// <summary>
         /// Iterates all connected input devices and assigns the first gamepad/joystick
         /// found to <see cref="_targetPlayerTwoId"/>.
@@ -198,7 +171,6 @@ namespace FFX2Tower10SequenceReverser
                 _targetPlayerTwoId == -1 ? ViewStates.Visible : ViewStates.Gone;
         }
 
-        // ── Input handling ─────────────────────────────────────────────────────
         /// <summary>
         /// Intercepts all key events at window level — before any view in the layout
         /// can consume them. This is required for L1/R1 which Android’s view-focus
@@ -223,10 +195,6 @@ namespace FFX2Tower10SequenceReverser
                 default:
                     if (ButtonDrawables.TryGetValue(e.KeyCode, out int drawableId))
                     {
-                        // Android synthesises DpadUp/Down/Left/Right key events from
-                        // analog-stick movement (source = Joystick). Reject those and
-                        // only accept events that originate from the real D-pad hat switch
-                        // (source includes Dpad).
                         if (e.KeyCode is Keycode.DpadUp or Keycode.DpadDown
                                       or Keycode.DpadLeft or Keycode.DpadRight)
                         {
@@ -263,7 +231,6 @@ namespace FFX2Tower10SequenceReverser
 
             if (!isJoystick) return base.OnGenericMotionEvent(e);
 
-            // ─ Triggers (L2 = Brake axis, R2 = Gas axis) ──────────────────────
             bool l2Now = e.GetAxisValue(Axis.Brake) > 0.5f;
             bool r2Now = e.GetAxisValue(Axis.Gas)   > 0.5f;
 
@@ -273,7 +240,6 @@ namespace FFX2Tower10SequenceReverser
             _l2Down = l2Now;
             _r2Down = r2Now;
 
-            // ─ D-pad hat axes (HatX: left=-1 right=+1, HatY: up=-1 down=+1) ───
             bool hatUpNow    = e.GetAxisValue(Axis.HatY) < -0.5f;
             bool hatDownNow  = e.GetAxisValue(Axis.HatY) >  0.5f;
             bool hatLeftNow  = e.GetAxisValue(Axis.HatX) < -0.5f;
@@ -292,7 +258,6 @@ namespace FFX2Tower10SequenceReverser
             return base.OnGenericMotionEvent(e);
         }
 
-        // ── Sequence logic ─────────────────────────────────────────────────────
         /// <summary>
         /// Returns the number of required inputs (N) for the given turn.
         ///   1–11 → 2    12–16 → 3    17–21 → 4    22–26 → 5    27–30 → 6
@@ -349,7 +314,6 @@ namespace FFX2Tower10SequenceReverser
             ApplyTurnState();
         }
 
-        // ── UI helpers ─────────────────────────────────────────────────────────
         /// <summary>
         /// Sets correct Gone/Visible state and clears images for every slot,
         /// then refreshes the HUD. Called on every turn boundary.
@@ -362,14 +326,11 @@ namespace FFX2Tower10SequenceReverser
             {
                 if (i < n)
                 {
-                    // Slots [0..N-1] are active; gravity="start" keeps this
-                    // block flush to the left edge of the screen
                     _slots[i].Visibility = ViewStates.Visible;
-                    _slots[i].SetImageDrawable(null);   // clear any previous icon
+                    _slots[i].SetImageDrawable(null);
                 }
                 else
                 {
-                    // Gone collapses excess slots so they take no screen space
                     _slots[i].Visibility = ViewStates.Gone;
                 }
             }
